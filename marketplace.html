@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARKETPLACE | NEXUS SIVE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;900&display=swap');
+        
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .font-heavy { font-family: 'Archivo Black', sans-serif; }
+        
+        /* INTRO CLEAN */
+        #intro-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 5000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .intro-logo { width: 180px; margin-bottom: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.98); } }
+
+        /* NAV BAR 1.5CM GLASS */
+        .glass-nav {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 250px; height: 56px;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 99px;
+            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+        }
+
+        /* CATEGORIAS ARREDONDADAS */
+        .cat-pill {
+            padding: 8px 24px; border-radius: 99px; border: 1px solid #1a1a1a;
+            font-size: 10px; font-weight: 900; text-transform: uppercase;
+            white-space: nowrap; transition: 0.3s; color: #666;
+        }
+        .cat-pill.active { border-color: #8B0000; color: #8B0000; background: rgba(139, 0, 0, 0.05); }
+
+        /* PRODUCT DISPLAY */
+        .product-card { 
+            width: 100vw; min-height: 100vh; padding: 40px 20px;
+            border-bottom: 1px solid #111; display: flex; flex-direction: column;
+        }
+        .img-container {
+            width: 100%; aspect-ratio: 1/1; background: #080808;
+            border-radius: 30px; margin-bottom: 30px; display: flex;
+            align-items: center; justify-content: center; overflow: hidden;
+            border: 1px solid #1a1a1a;
+        }
+
+        /* FORMULÁRIO HUD */
+        .input-nexus {
+            width: 100%; background: #0a0a0a; border: 1px solid #1a1a1a;
+            padding: 16px; border-radius: 12px; color: #fff; font-size: 13px;
+            outline: none; transition: 0.3s;
+        }
+        .input-nexus:focus { border-color: #8B0000; }
+
+        .btn-main {
+            width: 100%; padding: 16px; border-radius: 12px; font-weight: 900;
+            text-transform: uppercase; font-size: 11px; letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        #modal-cart { display: none; background: #000; position: fixed; inset: 0; z-index: 4000; padding: 40px 20px; }
+        #admin-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); z-index: 6000; align-items: center; justify-content: center; padding: 20px; }
+        
+        .hidden-step { display: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="intro-overlay">
+        <img src="ei_1776150431404-removebg-preview.png" alt="NEXUS" class="intro-logo">
+        <h2 id="typewriter" class="text-sm tracking-[0.3em] uppercase text-zinc-500 font-light italic"></h2>
+    </div>
+
+    <header class="p-10 pt-20">
+        <img src="ei_1776150431404-removebg-preview.png" class="w-36 mb-8 cursor-pointer" id="admin-trigger">
+        
+        <div class="relative mb-8">
+            <input type="text" id="search-input" placeholder="Pesquisar drop..." class="w-full bg-zinc-950 border border-zinc-900 p-4 rounded-xl text-xs uppercase font-bold tracking-widest outline-none focus:border-red-900 transition">
+        </div>
+
+        <div class="flex gap-3 overflow-x-auto no-scrollbar">
+            <button class="cat-pill active">Recentes</button>
+            <button class="cat-pill">Nexus</button>
+            <button class="cat-pill">Sive</button>
+            <button class="cat-pill">2K26</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="px-10 py-6" data-aos="fade-right">
+            <h2 class="text-4xl font-heavy italic tracking-tighter text-red-700 uppercase">DESTAQUE</h2>
+            <div class="w-full h-[1px] bg-red-900 mt-2 opacity-60"></div>
+        </section>
+
+        <div id="product-list">
+            </div>
+    </main>
+
+    <nav class="glass-nav">
+        <a href="index.html">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </a>
+        <button onclick="openCart()" class="relative">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <div id="dot" class="absolute -top-1 -right-1 w-2 h-2 bg-red-700 rounded-full hidden"></div>
+        </button>
+        <a href="https://wa.me/258879151175">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </a>
+    </nav>
+
+    <div id="modal-cart">
+        <div id="step-1">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-3xl font-heavy italic text-red-700">SUA BAG</h2>
+                <button onclick="closeCart()" class="text-2xl text-zinc-500">✕</button>
+            </div>
+            <div id="bag-list" class="space-y-6 mb-10 text-sm border-b border-zinc-900 pb-10"></div>
+            <button id="btn-next" onclick="showForm()" class="btn-main bg-white text-black hidden">Confirmar Detalhes</button>
+        </div>
+
+        <div id="step-2" class="hidden-step overflow-y-auto h-full pb-20">
+            <button onclick="backToStep1()" class="text-[10px] font-black text-zinc-500 mb-8 uppercase tracking-widest">← Voltar</button>
+            <h2 class="text-2xl font-heavy italic mb-8">DADOS DE ENVIO</h2>
+            <div class="space-y-4">
+                <input type="text" id="nome" placeholder="NOME COMPLETO" class="input-nexus">
+                <input type="tel" id="tel" placeholder="TEU NÚMERO" class="input-nexus">
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="toggleDel(true)" id="opt-del" class="p-4 border border-zinc-900 rounded-xl text-[10px] font-black uppercase">Entrega</button>
+                    <button onclick="toggleDel(false)" id="opt-pick" class="p-4 border border-zinc-900 rounded-xl text-[10px] font-black uppercase">Levantamento</button>
+                </div>
+                <div id="del-fields" class="hidden-step space-y-4">
+                    <input type="text" id="bairro" placeholder="TEU BAIRRO" class="input-nexus">
+                    <textarea id="obs-del" placeholder="OBSERVAÇÕES PARA DELIVERY" class="input-nexus h-24"></textarea>
+                </div>
+                <div id="pick-fields" class="hidden-step">
+                    <textarea id="obs-pick" placeholder="OBSERVAÇÕES ADICIONAIS" class="input-nexus h-24"></textarea>
+                </div>
+                <button onclick="sendWA()" class="btn-main bg-red-800 text-white mt-8">Finalizar no WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-modal">
+        <div class="bg-zinc-950 p-10 rounded-3xl border border-zinc-900 w-full max-w-sm">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-heavy italic uppercase">Acesso Admin</h3>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="admin-user" placeholder="NÚMERO" class="input-nexus text-center font-bold">
+                <input type="password" id="admin-pass" placeholder="PASSWORD" class="input-nexus text-center font-bold">
+                <button onclick="checkAdmin()" class="btn-main bg-red-800 text-white">Entrar no Painel</button>
+                <button onclick="closeAdmin()" class="w-full text-[10px] text-zinc-600 uppercase font-black mt-4">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        // Intro
+        const slogan = "Small details, big differences.";
+        let i = 0;
+        function type() {
+            if (i < slogan.length) {
+                document.getElementById("typewriter").innerHTML += slogan.charAt(i);
+                i++; setTimeout(type, 50);
+            } else {
+                setTimeout(() => {
+                    document.getElementById("intro-overlay").style.opacity = "0";
+                    setTimeout(() => document.getElementById("intro-overlay").style.visibility = "hidden", 800);
+                }, 1500);
+            }
+        }
+
+        // Carrinho
+        let bag = [];
+        let isDel = null;
+
+        function addBag(name, price) {
+            bag.push({name, price});
+            document.getElementById('dot').classList.remove('hidden');
+            document.getElementById('btn-next').classList.remove('hidden');
+            alert(`${name} adicionado!`);
+        }
+
+        function openCart() {
+            document.getElementById('modal-cart').style.display = 'block';
+            const list = document.getElementById('bag-list');
+            list.innerHTML = bag.length > 0 ? bag.map(i => `<div class="flex justify-between border-b border-zinc-900 pb-3"><span>${i.name}</span><span class="font-bold text-red-700">${i.price}</span></div>`).join('') : '<p class="text-zinc-700 italic text-center py-10">Vazio</p>';
+        }
+
+        function closeCart() { document.getElementById('modal-cart').style.display = 'none'; }
+        function showForm() { document.getElementById('step-1').classList.add('hidden-step'); document.getElementById('step-2').classList.remove('hidden-step'); }
+        function backToStep1() { document.getElementById('step-1').classList.remove('hidden-step'); document.getElementById('step-2').classList.add('hidden-step'); }
+
+        function toggleDel(val) {
+            isDel = val;
+            document.getElementById('del-fields').classList.toggle('hidden-step', !val);
+            document.getElementById('pick-fields').classList.toggle('hidden-step', val);
+            document.getElementById('opt-del').style.borderColor = val ? '#8B0000' : '#1a1a1a';
+            document.getElementById('opt-pick').style.borderColor = !val ? '#8B0000' : '#1a1a1a';
+        }
+
+        function sendWA() {
+            let msg = `*NOVA ORDEM - NEXUS SIVE*%0A%0A`;
+            bag.forEach(i => msg += `• ${i.name} (${i.price})%0A`);
+            msg += `%0A*Cliente:* ${document.getElementById('nome').value}%0A*Metodo:* ${isDel ? 'Entrega' : 'Levantamento'}`;
+            window.open(`https://wa.me/258879151175?text=${msg}`);
+        }
+
+        function loadProducts() {
+            const container = document.getElementById('product-list');
+            const db = JSON.parse(localStorage.getItem('nexus_db')) || [];
+
+            if (db.length === 0) {
+                container.innerHTML = `
+                    <div class="py-20 text-center">
+                        <p class="text-zinc-800 font-heavy italic uppercase text-2xl opacity-20">No Drops Yet</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = db.map(p => `
+                <section class="product-card" data-aos="fade-up">
+                    <div class="img-container">
+                        <img src="${p.image}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="px-2">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-2xl font-heavy italic uppercase">${p.name}</h3>
+                            <span class="text-xl font-black text-red-800">${p.price} MT</span>
+                        </div>
+                        <p class="text-zinc-500 text-xs mb-8 uppercase tracking-tighter">${p.desc}</p>
+                        <div class="space-y-3">
+                            <button onclick="addBag('${p.name}', '${p.price} MT')" class="btn-main bg-white text-black">
+                                Adicionar à Bag
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            `).join('');
+        }
+
+        window.onload = () => {
+            type();
+            loadProducts();
+        };
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCtqANWxSTLOK8K-yLTiTwviDofzLheGxA",
+    authDomain: "nexus-sive.firebaseapp.com",
+    projectId: "nexus-sive",
+    storageBucket: "nexus-sive.firebasestorage.app",
+    messagingSenderId: "450142731292",
+    appId: "1:450142731292:web:5685cf69f350c34bcc33d9",
+    measurementId: "G-30LV39HZPK"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>   
+        // Lógica Admin Secreta (7 toques)
+        const trigger = document.getElementById('admin-trigger');
+        let clicks = 0;
+        trigger.addEventListener('click', () => {
+            clicks++;
+            if(clicks === 7) {
+                document.getElementById('admin-modal').style.display = 'flex';
+                clicks = 0;
+            }
+        });
+
+        // VERIFICAÇÃO DE CREDENCIAIS (MANUAL)
+        function checkAdmin() {
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+
+            if (user === "879151175" && pass === "NEXUS2K26") {
+                location.href = 'niltonsive.html';
+            } else {
+                alert("Dados incorretos.");
+                document.getElementById('admin-pass').value = "";
+            }
+        }
+
+        function closeAdmin() { 
+            document.getElementById('admin-modal').style.display = 'none'; 
+            document.getElementById('admin-user').value = "";
+            document.getElementById('admin-pass').value = "";
+        }
+    </script>
+</body>
+</html>
